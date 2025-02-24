@@ -1056,8 +1056,10 @@ async function initializeSettings() {
         addSettingsChangeListeners();
         
     } catch (error) {
-        console.error('Failed to initialize settings:', error);
-        alert('Error loading settings configurations');
+    console.error('Failed to initialize settings:', error);
+    console.log('Error details:', error.message);
+    console.log('Error stack:', error.stack);
+    alert('Error loading settings configurations: ' + error.message);
     } finally {
         state.isInitializingSettings = false;
     }

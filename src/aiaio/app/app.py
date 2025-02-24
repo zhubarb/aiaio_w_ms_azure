@@ -894,7 +894,19 @@ async def chat(
                         logger.info(summary_messages)
                         async for chunk in text_streamer(summary_messages, client_id):
                             summary += chunk
-                        db.update_conversation_summary(conversation_id, summary.strip())
+
+                        # Process the summary to remove thinking tags and extract just the title
+                        processed_summary = summary.strip()
+                        logger.info(f'Conversation summary for title is: {processed_summary}')
+                        if '<think>' in processed_summary and '</think>' in processed_summary:
+                            # Extract only the text after the </think> tag
+                            processed_summary = processed_summary.split('</think>')[-1].strip()
+                            logger.info(f'Conversation summary after processing for title is: {processed_summary}')
+                        # Ensure the summary isn't too long (optional)
+                        if len(processed_summary) > 100:  # Set a reasonable max length
+                            processed_summary = processed_summary[:97] + "..."
+
+                        db.update_conversation_summary(conversation_id, processed_summary.strip())
 
                         # After summary update
                         await manager.broadcast(

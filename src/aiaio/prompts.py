@@ -1,7 +1,7 @@
 # This file is kept for reference. The prompts are now also stored in the database.
 
 SUMMARY_PROMPT = """
-you are a bot that summarizes user messages in less than 50 characters.
+you are a bot that summarizes user messages in less than 100 characters.
 just write a summary of the conversation. dont write this is a summary.
 dont answer the question, just summarize the conversation.
 the user wants to know what the conversation is about, not the answers.
