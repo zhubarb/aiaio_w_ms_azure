@@ -1141,7 +1141,7 @@ async function saveSettings() {
     if (saveButton) {
         saveButton.disabled = true;
     }
-
+    
     try {
 
         // Read provider directly from the form
@@ -1176,7 +1176,7 @@ async function saveSettings() {
 
         let response;
         let result;
-
+        
         // If this is a new configuration
         if (state.currentSettings.id === 'new') {
             response = await fetch('/settings', {
@@ -1193,21 +1193,21 @@ async function saveSettings() {
                 body: JSON.stringify(settings)
             });
         }
-
+        
         if (!response.ok) {
             throw new Error('Failed to save settings');
         }
-
+        
         result = await response.json();
-
+        
         // For new settings, we need the ID from the response
         const settingsId = state.currentSettings.id === 'new' ? result.id : settings.id;
-
+        
         // Set as default automatically
         const defaultResponse = await fetch(`/settings/${settingsId}/set_default`, {
             method: 'POST'
         });
-
+        
         if (!defaultResponse.ok) {
             throw new Error('Failed to set as default');
         }
@@ -1218,14 +1218,14 @@ async function saveSettings() {
             id: settingsId
         };
         state.originalSettings = {...state.currentSettings};
-
+        
         // Hide the warning since we just saved
         document.getElementById('settings-warning').classList.add('hidden');
-
+        
         // Refresh the settings list and reselect current settings
         await initializeSettings();
         document.getElementById('settings-selector').value = settingsId;
-
+        
         // Show success feedback
         const successNotification = document.createElement('div');
         successNotification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in';
@@ -1235,23 +1235,23 @@ async function saveSettings() {
             </svg>
             <span>Settings saved successfully</span>
         `;
-
+        
         document.body.appendChild(successNotification);
-
+        
         // Add fade out animation
         setTimeout(() => {
             successNotification.classList.add('opacity-0', 'transform', 'translate-y-[-1rem]');
             successNotification.style.transition = 'all 0.5s ease-out';
         }, 1500);
-
+        
         // Remove the notification after animation
         setTimeout(() => {
             successNotification.remove();
         }, 2000);
-
+        
     } catch (error) {
         console.error('Failed to save settings:', error);
-
+        
         // Show error notification
         const errorNotification = document.createElement('div');
         errorNotification.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in';
@@ -1261,14 +1261,14 @@ async function saveSettings() {
             </svg>
             <span>Error saving settings: ${error.message}</span>
         `;
-
+        
         document.body.appendChild(errorNotification);
-
+        
         setTimeout(() => {
             errorNotification.classList.add('opacity-0', 'transform', 'translate-y-[-1rem]');
             errorNotification.style.transition = 'all 0.5s ease-out';
         }, 3000);
-
+        
         setTimeout(() => {
             errorNotification.remove();
         }, 3500);
@@ -1285,7 +1285,7 @@ function addSettingsChangeListeners() {
         'config-name', 'temperature', 'top-p', 'max-tokens',
         'api-host', 'model-name', 'api-key'
     ];
-
+    
     inputs.forEach(id => {
         document.getElementById(id).addEventListener('input', checkSettingsChanged);
     });
@@ -1294,7 +1294,7 @@ function addSettingsChangeListeners() {
 // Check if settings have changed
 function checkSettingsChanged() {
     if (!state.originalSettings) return;
-
+    
     const current = {
         id: document.getElementById('settings-selector').value,
         name: document.getElementById('config-name').value.trim(),
@@ -1311,7 +1311,7 @@ function checkSettingsChanged() {
         updated_at: state.currentSettings?.updated_at,
         created_at: state.currentSettings?.created_at
     };
-
+    
     const hasChanged = JSON.stringify(current) !== JSON.stringify(state.originalSettings);
     document.getElementById('settings-warning').classList.toggle('hidden', !hasChanged);
 }
