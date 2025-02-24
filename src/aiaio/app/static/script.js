@@ -562,29 +562,29 @@ function updateAssistantMessage(content, messageDiv = null) {
     // Store the existing regenerate button before updating innerHTML
     const existingRegenerateButton = messageDiv.querySelector('.regenerate-button');
 
-    // Configure marked options and parse content
-    marked.setOptions({
-        gfm: true,
-        breaks: true,
-        headerIds: false,
-        mangle: false,
-        highlight: function(code, language) {
-            if (language && hljs.getLanguage(language)) {
-                try {
-                    return hljs.highlight(code, { language }).value;
-                } catch (err) {}
-            }
-            return code;
-        }
-    });
+  // Escape <think> and </think> tags to display as text
+  const escapedContent = content.replace(/<(\/?)think>/g, '&lt;$1think&gt;');
 
-    let parsedContent = marked.parse(content);
-    parsedContent = parsedContent.replace(
-        /<pre><code class="(.*?)">/g, 
-        '<pre><code class="hljs $1">'
-    );
+  // Configure marked options and parse content
+  marked.setOptions({
+    gfm: true,
+    breaks: true,
+    headerIds: false,
+    mangle: false,
+    highlight: function(code, language) {
+      if (language && hljs.getLanguage(language)) {
+        try {
+          return hljs.highlight(code, { language }).value;
+        } catch (err) {}
+      }
+      return code;
+    }
+  });
 
-    messageDiv.innerHTML = parsedContent;
+  let parsedContent = marked.parse(escapedContent);
+  parsedContent = parsedContent.replace(/<pre><code class="(.*?)">/g, '<pre><code class="hljs $1">');
+
+  messageDiv.innerHTML = parsedContent;
 
     // Get the messageId from the div's dataset
     const messageId = messageDiv.dataset.messageId;
